@@ -4,14 +4,14 @@ import connectDB from "@/app/utils/database"
 import { ItemModel } from "@/app/utils/schemaModels"
 
 // type Context = {
-//   params: Promise<{
+//   params: {
 //     id: string
-//   }>
+//   }
 // }
 type Context = {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 // export async function GET(request,context){

@@ -2,10 +2,15 @@ import {NextResponse, NextRequest} from "next/server"
 import connectDB from "@/app/utils/database"
 import {ItemModel} from "@/app/utils/schemaModels"
 
+// type Context = {
+//   params:{
+//     id: string
+//   }
+// }
 type Context = {
-  params:{
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export async function DELETE(request:NextRequest,context:Context){
