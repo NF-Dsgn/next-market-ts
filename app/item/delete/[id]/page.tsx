@@ -49,10 +49,11 @@ const DeleteItem = ({ params }: PageProps) => {
     const getSingleItem = async (): Promise<void> => {
       // const params = await context.params
       // const resolvedParams = await params
-      const resolvedParams = params
+      const { id } = params
       // const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/readsingle/${params.id}`, {cache:"no-store"})
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/item/readsingle/${resolvedParams.id}`,
+        // `${process.env.NEXT_PUBLIC_URL}/api/item/readsingle/${resolvedParams.id}`,
+        `${process.env.NEXT_PUBLIC_URL}/api/item/readsingle/${id}`,
         { cache: "no-store" }
       )
       const jsonData: ReadSingleItemResponse = await response.json()
@@ -75,10 +76,12 @@ const DeleteItem = ({ params }: PageProps) => {
   ): Promise<void> => {
     e.preventDefault() 
     // const params = await context.params
-    const resolvedParams = await params
+    // const resolvedParams = await params
+    const { id } = params
     try{
       // const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/delete/${params.id}`,{
-    const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/delete/${resolvedParams.id}`,{
+    // const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/delete/${resolvedParams.id}`,{
+    const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/delete/${id}`,{
         method: "DELETE",
         headers: {
           "Accept": "application/json",
