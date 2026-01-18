@@ -19,10 +19,17 @@ type ReadSingleItemResponse = {
   message: string
   singleItem: Item
 }
+// type PageProps = {
+//   params: Promise<{
+//     id: string
+//   }>
+// }
+// ※ params が Promise になるのは Server Component の async page の文脈
+// Client Component では不要?
 type PageProps = {
-  params: Promise<{
+  params: {
     id: string
-  }>
+  }
 }
 
 // const DeleteItem = (context) => {
