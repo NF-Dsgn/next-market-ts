@@ -48,7 +48,8 @@ const DeleteItem = ({ params }: PageProps) => {
     // const getSingleItem = async () => {
     const getSingleItem = async (): Promise<void> => {
       // const params = await context.params
-      const resolvedParams = await params
+      // const resolvedParams = await params
+      const resolvedParams = params
       // const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/readsingle/${params.id}`, {cache:"no-store"})
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_URL}/api/item/readsingle/${resolvedParams.id}`,
