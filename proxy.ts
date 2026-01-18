@@ -4,7 +4,8 @@ import { jwtVerify } from "jose"
 export async function proxy(request:NextRequest){
   // console.log("ミドルウェア")
   // const token = await request.headers.get("Authorization")?.split(" ")[1]
-  const token = "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5mMzNAZ21haWwuY29tIiwiZXhwIjoxNzY4MjczMzUxfQ.XctHTJPMa-R0PWkumMpR3KD2MI3Dc-rnZOmZGM-ZLKM"
+  // const token = "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5mMzNAZ21haWwuY29tIiwiZXhwIjoxNzY4MjczMzUxfQ.XctHTJPMa-R0PWkumMpR3KD2MI3Dc-rnZOmZGM-ZLKM"
+  const token = await request.headers.get("Authorization")?.split(" ")[1]
   if(!token){
     return NextResponse.json({message: "トークンがありません"})
   }
