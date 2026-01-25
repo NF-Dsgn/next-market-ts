@@ -1,16 +1,16 @@
 "use client"
 import {useState} from "react"
 
+type LoginResponse = {
+  message: string
+  token: string
+}
+
 const Login = () => {
   // const [email, setEmail] = useState("")
   // const [password, setPassword] = useState("")
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
-
-  type RegisterResponse = {
-    message: string
-    token: string
-  }
 
   // const handleSubmit = async(e) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -29,7 +29,7 @@ const Login = () => {
       })
       // const jsonData = await response.json()
       // const jsonData: { message: string; token: string } = await response.json()
-      const jsonData: RegisterResponse = await response.json()
+      const jsonData: LoginResponse = await response.json()
       // console.log(jsonData)
       localStorage.setItem("token", jsonData.token)
       alert(jsonData.message)
