@@ -3,24 +3,26 @@
 import { useState, useEffect, FormEvent, ChangeEvent, use } from "react"
 import { useRouter } from "next/navigation" 
 import useAuth from "@/app/utils/useAuth"
+import { ItemDataType, ApiResponse, PageProps } from "@/app/types"
 
-type ItemDataType = {
-  title: string
-  price: string
-  image: string
-  description: string
-  email: string
-}
-type ApiResponse = {
-  message: string;
-  singleItem?: ItemDataType; // 取得時はあるが、削除時は無いかもしれないので ? をつける
-}
-type UpdateItemProps = {
-  params: Promise<{ id: string }>
-}
+// type ItemDataType = {
+//   title: string
+//   price: string
+//   image: string
+//   description: string
+//   email: string
+// }
+// type ApiResponse = {
+//   message: string;
+//   singleItem?: ItemDataType; // 取得時はあるが、削除時は無いかもしれないので ? をつける
+// }
+// type UpdateItemProps = {
+//   params: Promise<{ id: string }>
+// }
 
 // const UpdateItem = (context) => {
-const UpdateItem = (props: UpdateItemProps) => {
+// const UpdateItem = (props: UpdateItemProps) => {
+const UpdateItem = (props: PageProps) => {
     const resolvedParams = use(props.params)
     const itemId = resolvedParams.id
 
@@ -58,8 +60,10 @@ const UpdateItem = (props: UpdateItemProps) => {
                 // const singleItem: ItemDataType = jsonData.singleItem
 
                 // const jsonData: ApiResponse = await response.json() //「型注釈（: Type）」
-                const jsonData = (await response.json()) as ApiResponse // 型アサーション (as Type)
+                // const jsonData = (await response.json()) as ApiResponse // 型アサーション (as Type)
+                const jsonData: ApiResponse<ItemDataType> = await response.json()
                 const singleItem = jsonData.singleItem
+
                 if (singleItem) {
                   setTitle(singleItem.title)
                   setPrice(singleItem.price)
@@ -81,6 +85,18 @@ const UpdateItem = (props: UpdateItemProps) => {
         e.preventDefault() 
         // const params = await context.params
         try{
+
+
+            // 送信データを一度オブジェクトにまとめると型安全性が増す
+            const bodyData: ItemDataType = {
+                title,
+                price,
+                image,
+                description,
+                email: loginUserEmail
+            }
+
+
             // const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/update/${params.id}`, {
             const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/update/${itemId}`, {
                 method: "PUT",
@@ -89,16 +105,18 @@ const UpdateItem = (props: UpdateItemProps) => {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`
                 },
-                body: JSON.stringify({
-                    title: title,
-                    price: price,
-                    image: image,
-                    description: description,
-                    email: loginUserEmail    
-                })
+                // body: JSON.stringify({
+                //     title: title,
+                //     price: price,
+                //     image: image,
+                //     description: description,
+                //     email: loginUserEmail    
+                // })
+                body: JSON.stringify(bodyData)
             })
             // const jsonData = await response.json()
-            const jsonData = (await response.json()) as ApiResponse
+            // const jsonData = (await response.json()) as ApiResponse
+            const jsonData: ApiResponse = await response.json()
             alert(jsonData.message)  
             router.push("/") 
             router.refresh()
@@ -114,6 +132,7 @@ const UpdateItem = (props: UpdateItemProps) => {
         <div>
             <title>編集ページ</title>     
             <meta name="description" content="編集ページです"/>
+            
             <h1 className="page-title">アイテム編集</h1>
             <form onSubmit={handleSubmit}>
                 {/* <input value={title} onChange={(e) => setTitle(e.target.value)} type="text" name="title" placeholder="アイテム名" required/>

@@ -4,24 +4,26 @@ import { useState, useEffect, FormEvent, use } from "react"
 import { useRouter } from "next/navigation" 
 import Image from "next/image"   
 import useAuth from "@/app/utils/useAuth"
+import { ItemDataType, ApiResponse, PageProps } from "@/app/types"
 
-type ItemDataType = {
-  title: string
-  price: string
-  image: string
-  description: string
-  email: string
-}
-type ApiResponse = {
-  message: string;
-  singleItem?: ItemDataType; // 取得時はあるが、削除時は無いかもしれないので ? をつける
-}
-type DeleteItemProps = {
-  params: Promise<{ id: string }>
-}
+// type ItemDataType = {
+//   title: string
+//   price: string
+//   image: string
+//   description: string
+//   email: string
+// }
+// type ApiResponse = {
+//   message: string;
+//   singleItem?: ItemDataType;
+// }
+// type DeleteItemProps = {
+//   params: Promise<{ id: string }>
+// }
 
 // const DeleteItem = (context) => {
-const DeleteItem = (props: DeleteItemProps) => {
+// const DeleteItem = (props: DeleteItemProps) => {
+const DeleteItem = (props: PageProps) => {
 
     // React 19の useフックで Promiseである paramsをアンラップ
     const params = use(props.params)
@@ -41,7 +43,7 @@ const DeleteItem = (props: DeleteItemProps) => {
     const [loading, setLoading] = useState<boolean>(false)
 
     const router = useRouter()
-    const loginUserEmail = useAuth() 
+    const loginUserEmail = useAuth()
 
     useEffect(() => {
         const getSingleItem = async() => {
@@ -53,8 +55,12 @@ const DeleteItem = (props: DeleteItemProps) => {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/readsingle/${itemId}`, { cache: "no-store" })
                 // const jsonData = await response.json() 
                 // const singleItem: ItemDataType = jsonData.singleItem
-                const jsonData = (await response.json()) as ApiResponse // 型アサーション (as Type)
+                // const jsonData = (await response.json()) as ApiResponse // 型アサーション (as Type)
+                
+                // ジェネリクスを使って ApiResponse<ItemDataType> と定義
+                const jsonData: ApiResponse<ItemDataType> = await response.json()
                 const singleItem = jsonData.singleItem
+
                 if (singleItem) {
                     setTitle(singleItem.title)
                     setPrice(singleItem.price)
@@ -89,7 +95,8 @@ const DeleteItem = (props: DeleteItemProps) => {
                 })
             })
             // const jsonData = await response.json()
-            const jsonData = (await response.json()) as ApiResponse
+            // const jsonData = (await response.json()) as ApiResponse
+            const jsonData: ApiResponse = await response.json() // 削除時は中身(T)が不要なので ApiResponse のみ
             alert(jsonData.message)
             router.push("/") 
             router.refresh()
@@ -109,7 +116,7 @@ const DeleteItem = (props: DeleteItemProps) => {
             <form onSubmit={handleSubmit}>
                 <h2>{title}</h2>
                 {image && (
-                  <Image src={image} width={750} height={500} alt="item-image" priority/>
+                    <Image src={image} width={750} height={500} alt="item-image" priority/>
                 )}
                 <h3>¥{price}</h3>
                 <p>{description}</p>

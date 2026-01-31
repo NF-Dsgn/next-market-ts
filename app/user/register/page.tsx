@@ -1,5 +1,7 @@
 "use client"
 import {useState} from "react"
+import { useRouter } from "next/navigation"
+import { UserDataType, ApiResponse } from "@/app/types"
 
 const Register = () => {
   // const [name, setName] = useState("")
@@ -8,36 +10,53 @@ const Register = () => {
   const [name, setName] = useState<string>("")
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
-
   // console.log(name)
+  const router = useRouter()
 
   // const handleSubmit = async(e) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
     try{
+      
+      const bodyData: UserDataType = {
+        name,
+        email,
+        password
+      }
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/register`,{
         method:"POST",
         headers: {
           "Accept": "application/json",
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          name:name,
-          email:email,
-          password:password
-        })
+        // body: JSON.stringify({
+        //   name:name,
+        //   email:email,
+        //   password:password
+        // })
+        body: JSON.stringify(bodyData)
       })
       // const jsonData = await response.json()
-      const jsonData: { message: string } = await response.json()
+      // const jsonData: { message: string } = await response.json()
+      const jsonData: ApiResponse = await response.json()
       alert(jsonData.message)
-    }catch{
+
+      // 成功したらログインページへ飛ばす（実務的なUX）
+      if (response.ok) {
+        router.push("/user/login")
+      }
+
+    } catch (error) {
       alert("ユーザー登録失敗")
     }
   }
+
   return(
     <div>
       <title>登録ページ</title>
       <meta name="description" content="登録ページです"/>
+
       <h1 className="page-title">ユーザー登録</h1>
       <form onSubmit={handleSubmit}>
 
@@ -57,7 +76,8 @@ const Register = () => {
         <input
           value={email}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-          type="text"
+          // type="text"
+          type="email"
           name="email"
           placeholder="メールアドレス"
           required
@@ -68,13 +88,14 @@ const Register = () => {
         <input
           value={password}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-          type="text"
+          // type="text"
+          type="password"
           name="password"
           placeholder="パスワード"
           required
         />
 
-        <button>登録</button>
+        <button type="submit">登録</button>
       </form>
     </div>
   )

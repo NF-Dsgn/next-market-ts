@@ -17,6 +17,7 @@ const useAuth = (): string => {
     // const checkToken = async() => {
     const checkToken = async (): Promise<void> => {
       const token = localStorage.getItem("token")
+
       if(!token){
         router.push("/user/login")
         return //tsで追加
@@ -34,7 +35,8 @@ const useAuth = (): string => {
         } else {
           router.push("/user/login")
         }
-      }catch{
+      // }catch{
+      } catch (error) {
         router.push("/user/login")
       }
     }

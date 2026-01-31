@@ -2,20 +2,22 @@
 import {useState} from "react"
 import { useRouter } from "next/navigation"
 import useAuth from "@/app/utils/useAuth"
+import { ItemDataType, ApiResponse } from "@/app/types"
 
-type CreateItemResponse = {
-  message: string
-}
+// type CreateItemResponse = {
+//   message: string
+// }
 
 const CreateItem = () => {
-  // const [title, setTitle] = useState("")
-  // const [price, setPrice] = useState("")
-  // const [image, setImage] = useState("")
-  // const [description, setDescription] = useState("")
-  const [title, setTitle] = useState<string>("")
-  const [price, setPrice] = useState<string>("")
-  const [image, setImage] = useState<string>("")
-  const [description, setDescription] = useState<string>("")
+  // / useState の初期値から型推論されるので <string> は省略してもOK、あっても丁寧
+  // const [title, setTitle] = useState<string>("")
+  // const [price, setPrice] = useState<string>("")
+  // const [image, setImage] = useState<string>("")
+  // const [description, setDescription] = useState<string>("")
+  const [title, setTitle] = useState("")
+  const [price, setPrice] = useState("")
+  const [image, setImage] = useState("")
+  const [description, setDescription] = useState("")
 
   const router = useRouter()
   const loginUserEmail = useAuth()
@@ -28,6 +30,16 @@ const CreateItem = () => {
     e.preventDefault() 
 
     try{
+
+      // JSON.stringify の中に直接書くのではなく、一度 ItemDataType 型の変数に入れることで、「必須項目（emailなど）を入れ忘れていないか」を TypeScript がチェックしてくれる。title: title を title とだけ書くのは省略記法
+      const bodyData: ItemDataType = {
+        title,
+        price,
+        image,
+        description,
+        email: loginUserEmail
+      }
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/create`,{
         method: "POST",
         headers: {
@@ -35,20 +47,23 @@ const CreateItem = () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("token")}`
         },
-        body: JSON.stringify({
-          title: title,
-          price: price,
-          image: image,
-          description: description,
-          email: loginUserEmail,
-        }),
+        // body: JSON.stringify({
+        //   title: title,
+        //   price: price,
+        //   image: image,
+        //   description: description,
+        //   email: loginUserEmail,
+        // }),
+        body: JSON.stringify(bodyData),
       })
       // const jsonData = await response.json()
-      const jsonData: CreateItemResponse = await response.json()
+      // const jsonData: CreateItemResponse = await response.json()
+      const jsonData: ApiResponse = await response.json()
       alert(jsonData.message)
       router.push("/")
       router.refresh()
-    }catch{
+    // }catch{
+    } catch (error) {
       alert("アイテム作成失敗")
     }
   }
@@ -56,6 +71,7 @@ const CreateItem = () => {
   if(loginUserEmail){
     return(
       <div>
+        {/* Next.jsでは title/meta は通常 layout や Metadata で管理する。これは古い書き方だが一旦このまま */}
         <title>作成ページ</title>
         <meta name="description" content="作成ページです"/>
         <h1 className="page-title">アイテム作成</h1>
